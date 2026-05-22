@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Easter Egg</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f5f5;
+      --lilac: #c084fc;
+      --lilac-dark: #7c3aed;
+      --lilac-glow: #e879f9;
+    }
+
+    body {
+      background: var(--black);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      overflow: hidden;
+      cursor: default;
+      transition: background 0.6s ease;
+    }
+
+    /* ── ESTADO INICIAL ── */
+    #click-box {
+      position: relative;
+      background: var(--white);
+      color: var(--black);
+      border: 4px solid var(--black);
+      padding: 22px 32px;
+      font-size: clamp(10px, 2vw, 14px);
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      image-rendering: pixelated;
+      box-shadow:
+        6px 6px 0 #555,
+        -2px -2px 0 #ccc inset;
+      transition:
+        transform 0.08s,
+        box-shadow 0.08s;
+      z-index: 10;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    #click-box::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border: 2px dashed rgba(255,255,255,0.08);
+      pointer-events: none;
+      border-radius: 2px;
+    }
+
+    #click-box:hover {
+      transform: scale(1.04) translateY(-2px);
+      box-shadow:
+        8px 8px 0 #333,
+        -2px -2px 0 #eee inset;
+    }
+
+    #click-box:active {
+      transform: scale(0.97) translateY(2px);
+      box-shadow:
+        2px 2px 0 #333,
+        -1px -1px 0 #ccc inset;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
+    }
+
+    /* ── PARTÍCULAS ── */
+    #particles { position: fixed; inset: 0; pointer-events: none; z-index: 5; }
+
+    .particle {
+      position: absolute;
+      width: 8px; height: 8px;
+      image-rendering: pixelated;
+      opacity: 0;
+      animation: particle-fall 1.2s ease-out forwards;
+    }
+
+    @keyframes particle-fall {
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+    }
+
+    /* ── OVERLAY LILA ── */
+    #love-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--lilac-dark);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #love-screen.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* scanlines overlay */
+    #love-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.07) 0px,
+        rgba(0,0,0,0.07) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+      pointer-events: none;
+    }
+
+    /* noise texture */
+    #love-screen::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size: 180px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    #love-text {
+      font-size: clamp(24px, 6vw, 56px);
+      color: #fff;
+      text-align: center;
+      line-height: 1.6;
+      letter-spacing: 2px;
+      text-shadow:
+        0 0 20px var(--lilac-glow),
+        0 0 60px var(--lilac),
+        4px 4px 0 rgba(0,0,0,0.35);
+      animation: pulse-text 1.8s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes pulse-text {
+      0%, 100% { text-shadow: 0 0 20px var(--lilac-glow), 0 0 60px var(--lilac), 4px 4px 0 rgba(0,0,0,0.35); }
+      50%       { text-shadow: 0 0 40px var(--lilac-glow), 0 0 100px var(--lilac), 4px 4px 0 rgba(0,0,0,0.35); }
+    }
+
+    #love-emoji {
+      font-size: clamp(40px, 10vw, 90px);
+      margin-top: 20px;
+      animation: beat 0.9s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.18); }
+    }
+
+    #restart-hint {
+      margin-top: 32px;
+      font-size: clamp(7px, 1.3vw, 11px);
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 1px;
+      animation: blink 1.4s step-start infinite;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    /* ── ESTRELLAS FONDO ── */
+    #stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.6); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo de estrellas -->
+  <div id="stars"></div>
+
+  <!-- Pantalla inicial -->
+  <div id="click-box" onclick="trigger()">da click aquí</div>
+
+  <!-- Partículas -->
+  <div id="particles"></div>
+
+  <!-- Pantalla de amor -->
+  <div id="love-screen" onclick="reset()">
+    <div id="love-text">te quiero<br>Ernesto</div>
+    <div id="love-emoji">💜</div>
+    <div id="restart-hint">[ da click para reiniciar ]</div>
+  </div>
+
+<script>
+  /* ── Estrellas ── */
+  const starsEl = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left   = Math.random() * 100 + '%';
+    s.style.top    = Math.random() * 100 + '%';
+    s.style.setProperty('--d', (1.5 + Math.random() * 3) + 's');
+    s.style.animationDelay = Math.random() * 4 + 's';
+    starsEl.appendChild(s);
+  }
+
+  /* ── Partículas pixeladas ── */
+  const COLORS = ['#c084fc','#e879f9','#a855f7','#f0abfc','#ffffff','#fbbf24'];
+
+  function burst(x, y) {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const angle = Math.random() * Math.PI * 2;
+      const dist  = 60 + Math.random() * 120;
+      p.style.left  = x + 'px';
+      p.style.top   = y + 'px';
+      p.style.background = COLORS[Math.floor(Math.random() * COLORS.length)];
+      p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      p.style.animationDuration = (0.8 + Math.random() * 0.6) + 's';
+      container.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+
+  /* ── Trigger ── */
+  function trigger() {
+    const box   = document.getElementById('click-box');
+    const rect  = box.getBoundingClientRect();
+    const cx    = rect.left + rect.width  / 2;
+    const cy    = rect.top  + rect.height / 2;
+
+    burst(cx, cy);
+    box.style.animation = 'none';
+    box.style.opacity   = '0';
+    box.style.pointerEvents = 'none';
+
+    setTimeout(() => {
+      document.getElementById('love-screen').classList.add('active');
+    }, 300);
+  }
+
+  /* ── Reset ── */
+  function reset() {
+    document.getElementById('love-screen').classList.remove('active');
+    const box = document.getElementById('click-box');
+    setTimeout(() => {
+      box.style.opacity = '1';
+      box.style.pointerEvents = 'auto';
+      box.style.animation = 'float 3s ease-in-out infinite';
+    }, 400);
+  }
+</script>
+</body>
+</html>
