@@ -44,9 +44,7 @@
       box-shadow:
         6px 6px 0 #555,
         -2px -2px 0 #ccc inset;
-      transition:
-        transform 0.08s,
-        box-shadow 0.08s;
+      transition: transform 0.08s, box-shadow 0.08s;
       z-index: 10;
       animation: float 3s ease-in-out infinite;
     }
@@ -62,16 +60,12 @@
 
     #click-box:hover {
       transform: scale(1.04) translateY(-2px);
-      box-shadow:
-        8px 8px 0 #333,
-        -2px -2px 0 #eee inset;
+      box-shadow: 8px 8px 0 #333, -2px -2px 0 #eee inset;
     }
 
     #click-box:active {
       transform: scale(0.97) translateY(2px);
-      box-shadow:
-        2px 2px 0 #333,
-        -1px -1px 0 #ccc inset;
+      box-shadow: 2px 2px 0 #333, -1px -1px 0 #ccc inset;
     }
 
     @keyframes float {
@@ -115,7 +109,6 @@
       pointer-events: all;
     }
 
-    /* scanlines overlay */
     #love-screen::before {
       content: '';
       position: absolute;
@@ -130,7 +123,6 @@
       pointer-events: none;
     }
 
-    /* noise texture */
     #love-screen::after {
       content: '';
       position: absolute;
@@ -189,6 +181,44 @@
       50%       { opacity: 0; }
     }
 
+    /* ── BOTÓN VIDEO ── */
+    #video-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 30;
+      font-family: 'Press Start 2P', monospace;
+      font-size: clamp(8px, 1.5vw, 11px);
+      background: transparent;
+      border: 3px solid var(--lilac);
+      color: var(--lilac);
+      padding: 12px 20px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 4px 4px 0 var(--lilac-dark);
+      transition: all 0.15s;
+      text-decoration: none;
+      display: inline-block;
+      animation: btn-float 2.5s ease-in-out infinite;
+    }
+
+    #video-btn:hover {
+      background: var(--lilac-dark);
+      color: #fff;
+      box-shadow: 6px 6px 0 #4c1d95;
+      transform: translateY(-3px);
+    }
+
+    #video-btn:active {
+      transform: translateY(1px);
+      box-shadow: 2px 2px 0 var(--lilac-dark);
+    }
+
+    @keyframes btn-float {
+      0%, 100% { box-shadow: 4px 4px 0 var(--lilac-dark), 0 0 10px rgba(192,132,252,0.2); }
+      50%       { box-shadow: 4px 4px 0 var(--lilac-dark), 0 0 25px rgba(232,121,249,0.45); }
+    }
+
     /* ── ESTRELLAS FONDO ── */
     #stars { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
 
@@ -208,24 +238,22 @@
 </head>
 <body>
 
-  <!-- Fondo de estrellas -->
   <div id="stars"></div>
 
-  <!-- Pantalla inicial -->
   <div id="click-box" onclick="trigger()">da click aquí</div>
 
-  <!-- Partículas -->
   <div id="particles"></div>
 
-  <!-- Pantalla de amor -->
   <div id="love-screen" onclick="reset()">
     <div id="love-text">te quiero<br>Ernesto</div>
     <div id="love-emoji">💜</div>
     <div id="restart-hint">[ da click para reiniciar ]</div>
   </div>
 
+  <!-- Botón Video siempre visible -->
+  <a id="video-btn" href="videos-ernesto.html" target="_blank">▶ video</a>
+
 <script>
-  /* ── Estrellas ── */
   const starsEl = document.getElementById('stars');
   for (let i = 0; i < 80; i++) {
     const s = document.createElement('div');
@@ -237,7 +265,6 @@
     starsEl.appendChild(s);
   }
 
-  /* ── Partículas pixeladas ── */
   const COLORS = ['#c084fc','#e879f9','#a855f7','#f0abfc','#ffffff','#fbbf24'];
 
   function burst(x, y) {
@@ -258,24 +285,18 @@
     }
   }
 
-  /* ── Trigger ── */
   function trigger() {
-    const box   = document.getElementById('click-box');
-    const rect  = box.getBoundingClientRect();
-    const cx    = rect.left + rect.width  / 2;
-    const cy    = rect.top  + rect.height / 2;
-
-    burst(cx, cy);
+    const box  = document.getElementById('click-box');
+    const rect = box.getBoundingClientRect();
+    burst(rect.left + rect.width / 2, rect.top + rect.height / 2);
     box.style.animation = 'none';
     box.style.opacity   = '0';
     box.style.pointerEvents = 'none';
-
     setTimeout(() => {
       document.getElementById('love-screen').classList.add('active');
     }, 300);
   }
 
-  /* ── Reset ── */
   function reset() {
     document.getElementById('love-screen').classList.remove('active');
     const box = document.getElementById('click-box');
